@@ -6,6 +6,8 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
@@ -26,26 +28,22 @@ public class AdminController {
         return "admin";
     }
 
+    @GetMapping("/new")
+    public String showCreateForm(Model model) {
+        model.addAttribute("user", new User());
+        model.addAttribute("allRoles", roleService.findAll());
+        return "user-form";
+    }
+
     @PostMapping("/add")
-    public String addUser(@RequestParam String username,
-                          @RequestParam String password,
-                          @RequestParam String name,
-                          @RequestParam(required = false) Integer age,
-                          @RequestParam(required = false) String email,
-                          @RequestParam(required = false) java.util.List<Long> roleIds) {
+    public String createUser(@RequestParam String username,
+                             @RequestParam String password,
+                             @RequestParam String name,
+                             @RequestParam(required = false) Integer age,
+                             @RequestParam(required = false) String email,
+                             @RequestParam(required = false) Set<Long> roleIds) {
 
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setName(name);
-        user.setAge(age);
-        user.setEmail(email);
-
-        if (roleIds != null && !roleIds.isEmpty()) {
-            user.setRoles(roleService.findByIds(roleIds));
-        }
-
-        userService.saveUser(user);
+        userService.createUser(username, password, name, age, email, roleIds);
         return "redirect:/admin";
     }
 
@@ -64,22 +62,9 @@ public class AdminController {
                              @RequestParam String name,
                              @RequestParam(required = false) Integer age,
                              @RequestParam(required = false) String email,
-                             @RequestParam(required = false) java.util.List<Long> roleIds) {
+                             @RequestParam(required = false) Set<Long> roleIds) {
 
-        User user = userService.getUserById(id);
-        user.setUsername(username);
-        if (password != null && !password.isEmpty()) {
-            user.setPassword(password);
-        }
-        user.setName(name);
-        user.setAge(age);
-        user.setEmail(email);
-
-        if (roleIds != null && !roleIds.isEmpty()) {
-            user.setRoles(roleService.findByIds(roleIds));
-        }
-
-        userService.updateUser(user);
+        userService.updateUser(id, username, password, name, age, email, roleIds);
         return "redirect:/admin";
     }
 

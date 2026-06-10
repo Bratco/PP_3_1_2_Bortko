@@ -9,5 +9,5 @@ public interface RoleService {
     Role findById(Long id);
     Role findByName(String name);
     Role save(Role role);
-    Set<Role> findByIds(List<Long> ids);
+    Set<Role> findByIds(Set<Long> ids);
 }
